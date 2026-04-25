@@ -44,3 +44,29 @@ export interface Match {
 export interface MatchesResponse {
   matches: Match[];
 }
+
+export interface StandingEntry {
+  position: number;
+  team: Team;
+  playedGames: number;
+  won: number;
+  draw: number;
+  lost: number;
+  points: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  form: string | null;
+}
+
+export interface StandingGroup {
+  stage: string;
+  type: string;
+  group: string | null;
+  table: StandingEntry[];
+}
+
+export interface StandingsResponse {
+  competition: Competition;
+  standings: StandingGroup[];
+}

@@ -1,6 +1,6 @@
 // src/routes/[league]/+page.server.ts
 import type { PageServerLoad } from "./$types";
-import { fetchUpcomingMatches } from "$lib/api";
+import { fetchUpcomingMatches, fetchStandings } from "$lib/api";
 import { error } from "@sveltejs/kit";
 import { FOOTBALL_DATA_API_KEY } from "$env/static/private";
 
@@ -18,10 +18,15 @@ export const load: PageServerLoad = async ({ params }) => {
     error(404, `Unknown league: ${params.league}`);
   }
 
-  const data = await fetchUpcomingMatches(FOOTBALL_DATA_API_KEY);
+  const [matchesData, standingsData] = await Promise.all([
+    fetchUpcomingMatches(FOOTBALL_DATA_API_KEY),
+    fetchStandings(FOOTBALL_DATA_API_KEY, code),
+  ]);
 
   return {
-    matches: data.matches.filter((m) => m.competition.code === code),
+    matches: matchesData.matches.filter((m) => m.competition.code === code),
+    standings: standingsData.standings,
+    competition: standingsData.competition,
     league: params.league,
   };
 };

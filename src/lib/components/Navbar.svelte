@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 </script>
 
 <nav>
-    <a href="/" class:active={$page.url.pathname === '/'}>Home</a>
-    <a href="/premier-league" class:active={$page.url.pathname === '/premier-league'}>Premier League</a>
-    <a href="/champions-league" class:active={$page.url.pathname === '/champions-league'}>Champions League</a>
-    <a href="/bundesliga" class:active={$page.url.pathname === '/bundesliga'}>Bundesliga</a>
-    <a href="/la-liga" class:active={$page.url.pathname === '/la-liga'}>La Liga</a>
+    <a href="/" class:active={page.url.pathname === '/'}>Home</a>
+    <a href="/premier-league" class:active={page.url.pathname === '/premier-league'}>Premier League</a>
+    <a href="/champions-league" class:active={page.url.pathname === '/champions-league'}>Champions League</a>
+    <a href="/bundesliga" class:active={page.url.pathname === '/bundesliga'}>Bundesliga</a>
+    <a href="/la-liga" class:active={page.url.pathname === '/la-liga'}>La Liga</a>
 </nav>
 
 <style>
@@ -33,7 +33,7 @@
         transition: color 0.15s, border-color 0.15s;
 
         &:hover {
-            color: var(--color-text);
+            color: #fff;
             background-color: var(--color-border);
         }
 

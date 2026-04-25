@@ -1,4 +1,4 @@
-import type { MatchesResponse } from "./types";
+import type { MatchesResponse, StandingsResponse } from "./types";
 
 const BASE_URL = "https://api.football-data.org/v4";
 
@@ -76,6 +76,39 @@ export async function fetchUpcomingMatches(
   const data: MatchesResponse = await response.json();
 
   cache.set(cacheKey, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+
+  return data;
+}
+
+interface StandingsCacheEntry {
+  data: StandingsResponse;
+  expiresAt: number;
+}
+
+const standingsCache = new Map<string, StandingsCacheEntry>();
+
+export async function fetchStandings(
+  apiKey: string,
+  competitionCode: string,
+): Promise<StandingsResponse> {
+  const cached = standingsCache.get(competitionCode);
+  if (cached && Date.now() < cached.expiresAt) {
+    console.log(
+      `[football-api] Returning cached standings for ${competitionCode}.`,
+    );
+    return cached.data;
+  }
+
+  const response = await apiFetch(
+    `${BASE_URL}/competitions/${competitionCode}/standings`,
+    apiKey,
+  );
+  const data: StandingsResponse = await response.json();
+
+  standingsCache.set(competitionCode, {
+    data,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
 
   return data;
 }
