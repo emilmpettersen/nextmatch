@@ -64,7 +64,14 @@
                             class:finished={match.status === 'FINISHED'}>
 							<span class="competition">
 								{#if match.competition.emblem}
-									<img src={match.competition.emblem} alt={match.competition.name} width="24" height="24" />
+								<div class="competition-emblem-wrapper">
+									<img
+										src={match.competition.emblem}
+										alt={match.competition.name}
+										width="24"
+										style:height={match.competition.code === 'PL' ? '31px' : '24px'}
+									/>
+								</div>
 								{/if}
 								{match.competition.name}
 							</span>
@@ -158,7 +165,15 @@
 		gap: 0.4rem;
 		font-size: 0.75rem;
 		color: #888;
+		.competition-emblem-wrapper {
+			height: 24px;
+			display: flex;
+			align-items: flex-end;
+			justify-content: center;
+			flex-shrink: 0;
+		}
 		img {
+			width:auto;
 			filter:
             drop-shadow(0 0 1px rgba(255, 255, 255, 0.9))
             drop-shadow(0 0 1px rgba(255, 255, 255, 0.9));

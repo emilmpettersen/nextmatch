@@ -1,5 +1,4 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
   import Navbar from '$lib/components/Navbar.svelte';
 	import '$lib/styles/variables.css';
 
@@ -7,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>⚽</text></svg>" />
 </svelte:head>
 
 <Navbar/>

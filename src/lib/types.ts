@@ -70,3 +70,23 @@ export interface StandingsResponse {
   competition: Competition;
   standings: StandingGroup[];
 }
+
+export interface ScorerPlayer {
+  id: number;
+  name: string;
+  nationality: string | null;
+  position: string | null;
+}
+
+export interface ScorerEntry {
+  player: ScorerPlayer;
+  team: Team;
+  goals: number;
+  assists: number | null;
+  penalties: number | null;
+}
+
+export interface ScorersResponse {
+  competition: Competition;
+  scorers: ScorerEntry[];
+}

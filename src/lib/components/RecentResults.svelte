@@ -38,13 +38,13 @@
             })
     );
 
-    const collapsed = $state(new Set<number>());
+    let collapsed = $state(new Set<number>());
 
     function toggle(id: number) {
         if (collapsed.has(id)) {
-            collapsed.delete(id);
+            collapsed = new Set([...collapsed].filter((x) => x !== id));
         } else {
-            collapsed.add(id);
+            collapsed = new Set([...collapsed, id]);
         }
     }
 </script>
