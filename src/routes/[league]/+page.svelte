@@ -3,6 +3,7 @@
     import MatchList from '$lib/components/MatchList.svelte';
     import StandingsTable from '$lib/components/StandingsTable.svelte';
     import RecentResults from '$lib/components/RecentResults.svelte';
+    import { nationalityFlag } from '$lib/utils';
 
     let { data }: { data: PageData } = $props();
 
@@ -14,52 +15,9 @@
     const topAssister = $derived(
         data.scorers.reduce((best, s) => (s.assists ?? 0) > (best.assists ?? 0) ? s : best, data.scorers[0])
     );
-
-    const NATIONALITY_TO_CODE: Record<string, string> = {
-        Afghanistan: 'AF', Albania: 'AL', Algeria: 'DZ', Angola: 'AO', Argentina: 'AR',
-        Armenia: 'AM', Australia: 'AU', Austria: 'AT', Azerbaijan: 'AZ', Belgium: 'BE',
-        'Bosnia-Herzegovina': 'BA', Bosnia: 'BA', Brazil: 'BR', Bulgaria: 'BG', Cameroon: 'CM',
-        Canada: 'CA', Chile: 'CL', China: 'CN', Colombia: 'CO', Congo: 'CG',
-        'Costa Rica': 'CR', Croatia: 'HR', 'Czech Republic': 'CZ', Czechia: 'CZ',
-        Denmark: 'DK', Ecuador: 'EC', Egypt: 'EG', England: 'GB-ENG', Estonia: 'EE',
-        Ethiopia: 'ET', Finland: 'FI', France: 'FR', Gambia: 'GM', Georgia: 'GE',
-        Germany: 'DE', Ghana: 'GH', Greece: 'GR', Guinea: 'GN', 'Guinea-Bissau': 'GW',
-        Honduras: 'HN', Hungary: 'HU', Iceland: 'IS', Iran: 'IR', Ireland: 'IE',
-        Israel: 'IL', Italy: 'IT', 'Ivory Coast': 'CI', Jamaica: 'JM', Japan: 'JP',
-        Jordan: 'JO', Kazakhstan: 'KZ', Kosovo: 'XK', Latvia: 'LV', Lithuania: 'LT',
-        Luxembourg: 'LU', Mali: 'ML', Malta: 'MT', Mexico: 'MX', Moldova: 'MD',
-        Montenegro: 'ME', Morocco: 'MA', Mozambique: 'MZ', Netherlands: 'NL',
-        'New Zealand': 'NZ', Nigeria: 'NG', 'North Macedonia': 'MK', 'Northern Ireland': 'GB',
-        Norway: 'NO', Panama: 'PA', Paraguay: 'PY', Peru: 'PE', Poland: 'PL',
-        Portugal: 'PT', Romania: 'RO', Russia: 'RU', Scotland: 'GB-SCT', Senegal: 'SN',
-        Serbia: 'RS', Slovakia: 'SK', Slovenia: 'SI', Somalia: 'SO', 'South Korea': 'KR',
-        Spain: 'ES', Sudan: 'SD', Sweden: 'SE', Switzerland: 'CH', Tajikistan: 'TJ',
-        Tanzania: 'TZ', Togo: 'TG', Tunisia: 'TN', Turkey: 'TR', Ukraine: 'UA',
-        Uruguay: 'UY', USA: 'US', 'United States': 'US', Venezuela: 'VE', Wales: 'GB-WLS',
-        Zambia: 'ZM', Zimbabwe: 'ZW',
-    };
-
-    function nationalityFlag(nationality: string | null): string {
-        if (!nationality) return '';
-        const code = NATIONALITY_TO_CODE[nationality];
-        if (!code) return '';
-        // Handle GB subdivisions which don't have standard emoji
-        if (code.startsWith('GB-')) return '🇬🇧';
-        return code
-            .toUpperCase()
-            .split('')
-            .map((c) => String.fromCodePoint(0x1F1E6 - 65 + c.charCodeAt(0)))
-            .join('');
-    }
 </script>
 
 <main>
-    <!--<h1>
-        {#if data.competition.emblem}
-            <img src={data.competition.emblem} alt="" height="80" />
-        {/if}
-        {data.competition.name}
-    </h1>-->
     <div class="layout">
         <aside>
             <div class="emblem-wrapper">
@@ -122,26 +80,30 @@
         font-family: sans-serif;
     }
 
-    h1 {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 1.75rem;
-        margin-bottom: 1.5rem;
-    }
 
     .emblem-wrapper {
         height: 120px;
         display: flex;
         align-items: center;
         justify-content: center;
+        background:#1d142b;
+        border-radius:8px 8px 0px 0px;
+        border: 1px solid var(--color-border);
+        border-bottom:none;
+        padding:1rem 0;
     }
 
     .emblem {
         object-fit: contain;
         filter:
-            drop-shadow(0 0 1px rgba(255, 255, 255, 0.9))
-            drop-shadow(0 0 1px rgba(255, 255, 255, 0.9));
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 1));
     }
 
     .layout {
@@ -208,12 +170,6 @@
         font-size: 1.25rem;
         line-height: 1;
         flex-shrink: 0;
-    }
-
-    .stat-team {
-        font-size: 0.75rem;
-        color: var(--color-text-muted);
-        margin-left: auto;
     }
 
     .stat-value {

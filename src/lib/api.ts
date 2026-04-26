@@ -2,7 +2,9 @@ import type {
   MatchesResponse,
   StandingsResponse,
   ScorersResponse,
+  TeamsResponse,
 } from "./types";
+import { error } from "@sveltejs/kit";
 
 const BASE_URL = "https://api.football-data.org/v4";
 
@@ -39,6 +41,10 @@ async function apiFetch(
     return apiFetch(url, apiKey, retries - 1);
   }
 
+  if (response.status === 429) {
+    error(429, "API rate limit exceeded. Please try again in a minute.");
+  }
+
   if (!response.ok) {
     throw new Error(
       `Football API error: ${response.status} ${response.statusText}`,
@@ -57,11 +63,13 @@ async function apiFetch(
 
 export async function fetchUpcomingMatches(
   apiKey: string,
-  days = 7,
+  daysBack = 3,
+  daysAhead = 7,
 ): Promise<MatchesResponse> {
   const dateFrom = new Date();
+  dateFrom.setDate(dateFrom.getDate() - daysBack);
   const dateTo = new Date();
-  dateTo.setDate(dateTo.getDate() + days);
+  dateTo.setDate(dateTo.getDate() + daysAhead);
 
   const params = new URLSearchParams({
     dateFrom: dateFrom.toISOString().split("T")[0],
@@ -145,6 +153,81 @@ export async function fetchScorers(
   const data: ScorersResponse = await response.json();
 
   scorersCache.set(cacheKey, {
+    data,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+
+  return data;
+}
+
+const TEAMS_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+interface TeamsCacheEntry {
+  data: TeamsResponse;
+  expiresAt: number;
+}
+
+const teamsCache = new Map<string, TeamsCacheEntry>();
+
+export async function fetchTeams(
+  apiKey: string,
+  competitionCode: string,
+): Promise<TeamsResponse> {
+  const cached = teamsCache.get(competitionCode);
+  if (cached && Date.now() < cached.expiresAt) {
+    return cached.data;
+  }
+
+  const response = await apiFetch(
+    `${BASE_URL}/competitions/${competitionCode}/teams`,
+    apiKey,
+  );
+  const data: TeamsResponse = await response.json();
+
+  teamsCache.set(competitionCode, {
+    data,
+    expiresAt: Date.now() + TEAMS_CACHE_TTL_MS,
+  });
+
+  return data;
+}
+
+interface TeamMatchesCacheEntry {
+  data: MatchesResponse;
+  expiresAt: number;
+}
+
+const teamMatchesCache = new Map<string, TeamMatchesCacheEntry>();
+
+export async function fetchTeamMatches(
+  apiKey: string,
+  teamId: number,
+  daysBack = 30,
+  daysAhead = 30,
+): Promise<MatchesResponse> {
+  const dateFrom = new Date();
+  dateFrom.setDate(dateFrom.getDate() - daysBack);
+  const dateTo = new Date();
+  dateTo.setDate(dateTo.getDate() + daysAhead);
+
+  const params = new URLSearchParams({
+    dateFrom: dateFrom.toISOString().split("T")[0],
+    dateTo: dateTo.toISOString().split("T")[0],
+  });
+
+  const cacheKey = `${teamId}-${params}`;
+  const cached = teamMatchesCache.get(cacheKey);
+  if (cached && Date.now() < cached.expiresAt) {
+    return cached.data;
+  }
+
+  const response = await apiFetch(
+    `${BASE_URL}/teams/${teamId}/matches?${params}`,
+    apiKey,
+  );
+  const data: MatchesResponse = await response.json();
+
+  teamMatchesCache.set(cacheKey, {
     data,
     expiresAt: Date.now() + CACHE_TTL_MS,
   });

@@ -1,8 +1,17 @@
+export interface SquadMember {
+  id: number;
+  name: string;
+  position: string | null;
+  dateOfBirth: string | null;
+  nationality: string | null;
+}
+
 export interface Team {
   id: number;
   name: string;
   shortName: string;
   crest: string;
+  squad?: SquadMember[];
 }
 
 export interface Competition {
@@ -35,6 +44,8 @@ export interface Match {
     | "FINISHED"
     | "CANCELLED"
     | "POSTPONED";
+  minute: string | null;
+  injuryTime: number | null;
   homeTeam: Team;
   awayTeam: Team;
   competition: Competition;
@@ -69,6 +80,10 @@ export interface StandingGroup {
 export interface StandingsResponse {
   competition: Competition;
   standings: StandingGroup[];
+}
+
+export interface TeamsResponse {
+  teams: Team[];
 }
 
 export interface ScorerPlayer {

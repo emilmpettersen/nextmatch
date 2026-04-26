@@ -80,16 +80,16 @@
 									{#if match.homeTeam.crest}
 										<img src={match.homeTeam.crest} alt="" width="32" height="32" />
 									{/if}
-									{match.homeTeam.name}
-								</span>
-								<span class="score">
+								<span class="team-name">{match.homeTeam.name}</span>
+							</span>
+							<span class="score">
                                     {match.score.fullTime.home} - {match.score.fullTime.away}
                                 </span>
-								<span class="team">
-									{#if match.awayTeam.crest}
-										<img src={match.awayTeam.crest} alt="" width="32" height="32" />
-									{/if}
-									{match.awayTeam.name}
+							<span class="team">
+								{#if match.awayTeam.crest}
+									<img src={match.awayTeam.crest} alt="" width="32" height="32" />
+								{/if}
+								<span class="team-name">{match.awayTeam.name}</span>
 								</span>
 							</div>
 							{#if match.status === 'LIVE' || match.status === 'IN_PLAY' || match.status === 'PAUSED'}
@@ -117,8 +117,6 @@
 	{/if}
 
 <style>
-
-
 	h2 {
 		font-size: 1rem;
 		font-weight: 600;
@@ -137,6 +135,13 @@
         column-count: 2;
 		gap: 0.5rem;
 	}
+
+	@media screen and (max-width: 1024px) {
+		ul {
+			grid-template-columns: 1fr;
+		}
+	}
+
 
 	.match-card {
 		display: flex;
@@ -198,10 +203,21 @@
 		gap: 0.4rem;
 	}
 
+	.team-name {
+		display: -webkit-box;
+		line-clamp: 2;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		min-height: 2.6em;
+		line-height: 1.3;
+	}
+
 	.score {
 		color: #aaa;
 		font-size: 1.85rem;
         text-align: center;
+		text-wrap: nowrap;
 	}
 
 	.times {

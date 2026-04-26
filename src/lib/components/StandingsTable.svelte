@@ -49,21 +49,19 @@
 
 <style>
     .standings {
-        margin-top: 2rem;
         background-color: var(--color-bg-card);
-        border-radius:8px;
+        border-radius:0px 0px 8px 8px;
         color:#fff;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-        margin-bottom: 0.75rem;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.9rem;
+    }
+
+    thead {
+        background: var(--color-border);
     }
 
     th,

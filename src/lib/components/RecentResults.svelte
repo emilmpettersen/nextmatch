@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Match } from '$lib/types';
+    import { slide } from 'svelte/transition';
 
     let { matches = [] }: { matches: Match[] } = $props();
 
@@ -62,7 +63,7 @@
                     <svg class="chevron" class:open={!collapsed.has(group.competition.id)} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 {#if !collapsed.has(group.competition.id)}
-                <ul>
+                <ul transition:slide>
                     {#each group.matches as match}
                         {@const homeWon = (match.score.fullTime.home ?? 0) > (match.score.fullTime.away ?? 0)}
                         {@const awayWon = (match.score.fullTime.away ?? 0) > (match.score.fullTime.home ?? 0)}
@@ -201,9 +202,9 @@
     img {
         object-fit: contain;
         flex-shrink: 0;
-        filter:
+        /*filter:
             drop-shadow(0 0 1px rgba(255, 255, 255, 0.9))
-            drop-shadow(0 0 1px rgba(255, 255, 255, 0.9));
+            drop-shadow(0 0 1px rgba(255, 255, 255, 0.9));*/
     }
 </style>
 
