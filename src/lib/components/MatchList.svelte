@@ -28,6 +28,25 @@
 	const live = $derived(matches.filter((m: Match) => getStatusGroup(m) === 'live'));
 	const finished = $derived(matches.filter((m: Match) => getStatusGroup(m) === 'finished'));
 	const upcoming = $derived(matches.filter((m: Match) => getStatusGroup(m) === 'upcoming'));
+
+	let now = $state(Date.now());
+
+	$effect(() => {
+		const interval = setInterval(() => { now = Date.now(); }, 1000);
+		return () => clearInterval(interval);
+	});
+
+	function formatCountdown(utcDate: string): string {
+		const diff = new Date(utcDate).getTime() - now;
+		if (diff <= 0) return 'Starting soon';
+		const totalSeconds = Math.floor(diff / 1000);
+		const days = Math.floor(totalSeconds / 86400);
+		const hours = Math.floor((totalSeconds % 86400) / 3600);
+		const minutes = Math.floor((totalSeconds % 3600) / 60);
+		const seconds = totalSeconds % 60;
+		if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+		return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+	}
 </script>
 
 	{#if matches.length === 0}
@@ -71,8 +90,16 @@
                                 <span class="dot"></span>
                                 <span>LIVE</span>
                             </span>
-                        {:else}
+                        {:else if match.status === 'FINISHED'}
                             <span class="time">{formatDate(match.utcDate)}</span>
+                        {:else}
+						<div class="times">
+                            <span class="time">{formatDate(match.utcDate)}</span>
+                            <span class="countdown">
+                                <span class="countdown-dot"></span>
+                                {formatCountdown(match.utcDate)}
+                            </span>
+						</div>
                         {/if}
 						</li>
 					{/each}
@@ -157,9 +184,33 @@
         text-align: center;
 	}
 
+	.times {
+		display:flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
 	.time {
 		font-size: 0.8rem;
 		color: #666;
+	}
+
+	.countdown {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: #93c5fd;
+		letter-spacing: 0.03em;
+	}
+
+	.countdown-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #93c5fd;
+		flex-shrink: 0;
 	}
 
 	.empty {

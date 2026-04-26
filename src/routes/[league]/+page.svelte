@@ -10,14 +10,22 @@
 </script>
 
 <main>
-    <h1>
+    <!--<h1>
         {#if data.competition.emblem}
             <img src={data.competition.emblem} alt="" height="80" />
         {/if}
         {data.competition.name}
-    </h1>
+    </h1>-->
     <div class="layout">
         <aside>
+            <div class="emblem-wrapper">
+                <img
+                    class="emblem"
+                    src={data.competition.emblem}
+                    alt={data.competition.name}
+                    style:height={data.competition.code === 'PL' ? '180px' : '120px'}
+                />
+            </div>
             <StandingsTable standings={data.standings} />
             <RecentResults matches={data.matches} />
         </aside>
@@ -43,7 +51,14 @@
         margin-bottom: 1.5rem;
     }
 
-    h1 img {
+    .emblem-wrapper {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .emblem {
         object-fit: contain;
         filter:
             drop-shadow(0 0 1px rgba(255, 255, 255, 0.9))
