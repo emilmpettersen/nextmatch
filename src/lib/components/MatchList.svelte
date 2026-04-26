@@ -131,6 +131,11 @@
 		gap: 0.4rem;
 		font-size: 0.75rem;
 		color: #888;
+		img {
+			filter:
+            drop-shadow(0 0 1px rgba(255, 255, 255, 0.9))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 0.9));
+		}
 	}
 
 
