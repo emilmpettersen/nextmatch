@@ -18,17 +18,17 @@ export const load: PageServerLoad = async ({ params }) => {
     error(404, `Unknown league: ${params.league}`);
   }
 
-  const [matchesData, standingsData, scorersData] = await Promise.all([
-    fetchUpcomingMatches(FOOTBALL_DATA_API_KEY),
-    fetchStandings(FOOTBALL_DATA_API_KEY, code),
-    fetchScorers(FOOTBALL_DATA_API_KEY, code, 50),
-  ]);
-
   return {
-    matches: matchesData.matches.filter((m) => m.competition.code === code),
-    standings: standingsData.standings,
-    competition: standingsData.competition,
-    scorers: scorersData.scorers,
     league: params.league,
+    pageData: Promise.all([
+      fetchUpcomingMatches(FOOTBALL_DATA_API_KEY),
+      fetchStandings(FOOTBALL_DATA_API_KEY, code),
+      fetchScorers(FOOTBALL_DATA_API_KEY, code, 50),
+    ]).then(([matchesData, standingsData, scorersData]) => ({
+      matches: matchesData.matches.filter((m) => m.competition.code === code),
+      standings: standingsData.standings,
+      competition: standingsData.competition,
+      scorers: scorersData.scorers,
+    })),
   };
 };

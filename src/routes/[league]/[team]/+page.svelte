@@ -2,6 +2,7 @@
     import type { PageData } from './$types';
     import MatchList from '$lib/components/MatchList.svelte';
     import { nationalityFlag } from '$lib/utils';
+    import SkeletonLayout from './components/SkeletonLayout.svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -25,10 +26,9 @@
 
     const GROUP_ORDER = ['Goalkeepers', 'Defenders', 'Midfielders', 'Forwards'];
 
-    const squadByGroup = $derived.by(() => {
-        if (!data.team.squad) return [];
-        const groups: Record<string, typeof data.team.squad> = {};
-        for (const p of data.team.squad) {
+    function getSquadByGroup(squad: NonNullable<import('$lib/types').Team['squad']>) {
+        const groups: Record<string, typeof squad> = {};
+        for (const p of squad) {
             const group = (p.position && POSITION_GROUP[p.position]) ?? 'Other';
             (groups[group] ??= []).push(p);
         }
@@ -40,7 +40,7 @@
                     POSITION_ORDER.indexOf(a.position ?? '') - POSITION_ORDER.indexOf(b.position ?? '')
                 ),
             }));
-    });
+    }
 
     function positionClass(position: string | null): string {
         const group = (position && POSITION_GROUP[position]) ?? 'Other';
@@ -52,54 +52,72 @@
         }[group] ?? '';
     }
 
-    function age(dob: string | null): string {
-        if (!dob) return '—';
-        const diff = Date.now() - new Date(dob).getTime();
-        return String(Math.floor(diff / (365.25 * 24 * 3600 * 1000)));
-    }
+    const skeletonLayout = false;
 </script>
 
 <main>
+    
     <div class="layout">
-        <aside>
-        <div class="team-header">
-                <img
-                    class="emblem"
-                    src={data.team.crest}
-                    alt={data.team.name}
-                    height="100"
-                />
-                <h1>{data.team.name}</h1>
-            </div>
-            <div class="squad">
-                <h2>SQUAD</h2>
-            {#if data.team.squad}
-                {#each squadByGroup as group}
-                    <h3>{group.label}</h3>
-                    <ul>
-                        {#each group.players as player}
-                            <li><span class="position-indicator {positionClass(player.position)}"></span><span class="player-name">{player.name}</span>{#if nationalityFlag(player.nationality)}<span class="player-flag" title={player.nationality ?? ''}>{nationalityFlag(player.nationality)}</span>{/if}</li>
+        {#if skeletonLayout}
+        <SkeletonLayout />
+        {:else}
+        {#await data.teamAndMatches}
+            <SkeletonLayout />
+        {:then { team, matches }}
+            <aside>
+                <div class="team-header">
+                    <img
+                        class="emblem"
+                        src={team.crest}
+                        alt={team.name}
+                        height="100"
+                    />
+                    <h1>{team.name}</h1>
+                </div>
+                <div class="squad">
+                    <h2>SQUAD</h2>
+                    {#if team.squad}
+                        {@const squadByGroup = getSquadByGroup(team.squad)}
+                        {#each squadByGroup as group}
+                            <h3>{group.label}</h3>
+                            <ul>
+                                {#each group.players as player}
+                                    <li>
+                                        <span class="position-indicator {positionClass(player.position)}"></span>
+                                        <span class="player-name">{player.name}</span>
+                                        {#if nationalityFlag(player.nationality)}
+                                            <span class="player-flag" title={player.nationality ?? ''}>{nationalityFlag(player.nationality)}</span>
+                                        {/if}
+                                    </li>
+                                {/each}
+                            </ul>
                         {/each}
-                    </ul>
-                {/each}
-            {/if}
-            </div>
-        </aside>
-        <section>
-            <MatchList matches={data.matches} />
-        </section>
-    </div>
-</main>
-<style>
+                    {/if}
+                </div>
+            </aside>
+            <section>
+                <MatchList {matches} />
+            </section>
+        {/await}
+    {/if}
 
+    </div>
+
+</main>
+
+<style>
     main {
         max-width: 1440px;
         margin: 0 auto;
         padding: 2rem 1rem;
     }
+    
+    aside {
+        width:400px;
+        min-width: 400px;
+    }
 
     .squad {
-        width:400px;
         background-color: var(--color-bg-card);
         border-radius:0px 0px 8px 8px;
         color:#fff;
@@ -180,5 +198,4 @@
         font-size: 1rem;
         line-height: 1;
     }
-
 </style>

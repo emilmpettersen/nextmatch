@@ -18,20 +18,27 @@ export const load: PageServerLoad = async ({ params }) => {
     error(404, `Unknown league: ${params.league}`);
   }
 
-  const teamsData = await fetchTeams(FOOTBALL_DATA_API_KEY, code);
-  const team = teamsData.teams.find(
-    (t) => slugify(t.shortName) === params.team,
+  const teamAndMatches = fetchTeams(FOOTBALL_DATA_API_KEY, code).then(
+    async (teamsData) => {
+      const team = teamsData.teams.find(
+        (t) => slugify(t.shortName) === params.team,
+      );
+
+      if (!team) {
+        error(404, `Unknown team: ${params.team}`);
+      }
+
+      const matchesData = await fetchTeamMatches(
+        FOOTBALL_DATA_API_KEY,
+        team.id,
+      );
+
+      return { team, matches: matchesData.matches };
+    },
   );
 
-  if (!team) {
-    error(404, `Unknown team: ${params.team}`);
-  }
-
-  const matchesData = await fetchTeamMatches(FOOTBALL_DATA_API_KEY, team.id);
-
   return {
-    team,
-    matches: matchesData.matches,
     league: params.league,
+    teamAndMatches,
   };
 };

@@ -11,9 +11,7 @@ export const load: PageServerLoad = async () => {
     );
   }
 
-  const data = await fetchUpcomingMatches(FOOTBALL_DATA_API_KEY);
-
   return {
-    matches: data.matches,
+    matchesData: fetchUpcomingMatches(FOOTBALL_DATA_API_KEY),
   };
 };

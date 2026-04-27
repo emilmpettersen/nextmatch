@@ -3,72 +3,77 @@
     import MatchList from '$lib/components/MatchList.svelte';
     import StandingsTable from '$lib/components/StandingsTable.svelte';
     import RecentResults from '$lib/components/RecentResults.svelte';
+    import SkeletonLayout from './components/SkeletonLayout.svelte';
     import { nationalityFlag } from '$lib/utils';
 
     let { data }: { data: PageData } = $props();
 
-    const upcoming = $derived(data.matches.filter((m) => m.status !== 'FINISHED'));
-
-    const topScorer = $derived(
-        data.scorers.reduce((best, s) => (s.goals ?? 0) > (best.goals ?? 0) ? s : best, data.scorers[0])
-    );
-    const topAssister = $derived(
-        data.scorers.reduce((best, s) => (s.assists ?? 0) > (best.assists ?? 0) ? s : best, data.scorers[0])
-    );
+    const skeletonLayout = false;
 </script>
 
 <main>
     <div class="layout">
-        <aside>
-            <div class="emblem-wrapper">
-                <img
-                    class="emblem"
-                    src={data.competition.emblem}
-                    alt={data.competition.name}
-                    style:height={data.competition.code === 'PL' ? '180px' : '120px'}
-                />
-            </div>
-            <StandingsTable standings={data.standings} />
-            <RecentResults matches={data.matches} />
-        </aside>
-        <section>
-            {#if data.scorers.length > 0}
-                <div class="stat-cards">
-                    <div class="stat-card">
-                        <span class="stat-label">Top Scorer</span>
-                        <div class="stat-player">
-                            <div class="stat-player-info">
-                                {#if topScorer.team.crest}
-                                    <img src={topScorer.team.crest} alt={topScorer.team.shortName} width="24" height="24" />
-                                {/if}
-                                {#if nationalityFlag(topScorer.player.nationality)}
-                                    <span class="stat-flag" title={topScorer.player.nationality ?? ''}>{nationalityFlag(topScorer.player.nationality)}</span>
-                                {/if}
-                            </div>
-                            <span class="stat-name">{topScorer.player.name}</span>
-                            
-                        </div>
-                        <span class="stat-value">{topScorer.goals} <span class="stat-unit">goals</span></span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Top Assister</span>
-                        <div class="stat-player">
-                            <div class="stat-player-info">
-                                {#if topAssister.team.crest}
-                                    <img src={topAssister.team.crest} alt={topAssister.team.shortName} width="24" height="24" />
-                                {/if}
-                                {#if nationalityFlag(topAssister.player.nationality)}
-                                    <span class="stat-flag" title={topAssister.player.nationality ?? ''}>{nationalityFlag(topAssister.player.nationality)}</span>
-                                {/if}
-                            </div>
-                            <span class="stat-name">{topAssister.player.name}</span>
-                        </div>
-                        <span class="stat-value">{topAssister.assists} <span class="stat-unit">assists</span></span>
-                    </div>
+        {#if skeletonLayout}
+            <SkeletonLayout />
+        {:else}
+        {#await data.pageData}
+            <SkeletonLayout />
+        {:then { standings, competition, matches, scorers }}
+            <aside>
+                <div class="emblem-wrapper">
+                    <img
+                        class="emblem"
+                        src={competition.emblem}
+                        alt={competition.name}
+                        style:height={competition.code === 'PL' ? '180px' : '120px'}
+                    />
                 </div>
-            {/if}
-            <MatchList matches={upcoming} />
-        </section>
+                <StandingsTable {standings} />
+                <RecentResults {matches} />
+            </aside>
+
+            <section>
+                {#if scorers.length > 0}
+                    {@const topScorer = scorers.reduce((best, s) => (s.goals ?? 0) > (best.goals ?? 0) ? s : best, scorers[0])}
+                    {@const topAssister = scorers.reduce((best, s) => (s.assists ?? 0) > (best.assists ?? 0) ? s : best, scorers[0])}
+                    <div class="stat-cards">
+                        <div class="stat-card">
+                            <span class="stat-label">Top Scorer</span>
+                            <div class="stat-player">
+                                <div class="stat-player-info">
+                                    {#if topScorer.team.crest}
+                                        <img src={topScorer.team.crest} alt={topScorer.team.shortName} width="24" height="24" />
+                                    {/if}
+                                    {#if nationalityFlag(topScorer.player.nationality)}
+                                        <span class="stat-flag" title={topScorer.player.nationality ?? ''}>{nationalityFlag(topScorer.player.nationality)}</span>
+                                    {/if}
+                                </div>
+                                <span class="stat-name">{topScorer.player.name}</span>
+                            </div>
+                            <span class="stat-value">{topScorer.goals} <span class="stat-unit">goals</span></span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Top Assister</span>
+                            <div class="stat-player">
+                                <div class="stat-player-info">
+                                    {#if topAssister.team.crest}
+                                        <img src={topAssister.team.crest} alt={topAssister.team.shortName} width="24" height="24" />
+                                    {/if}
+                                    {#if nationalityFlag(topAssister.player.nationality)}
+                                        <span class="stat-flag" title={topAssister.player.nationality ?? ''}>{nationalityFlag(topAssister.player.nationality)}</span>
+                                    {/if}
+                                </div>
+                                <span class="stat-name">{topAssister.player.name}</span>
+                            </div>
+                            <span class="stat-value">{topAssister.assists} <span class="stat-unit">assists</span></span>
+                        </div>
+                    </div>
+                {/if}
+                <MatchList matches={matches.filter((m) => m.status !== 'FINISHED')} />
+            </section>
+        {/await}
+        {/if}
+
     </div>
 </main>
 
@@ -184,4 +189,5 @@
         font-weight: 400;
         color: var(--color-text-muted);
     }
+
 </style>

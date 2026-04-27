@@ -2,20 +2,30 @@
     import type { PageData } from './$types';
     import MatchList from '$lib/components/MatchList.svelte';
     import RecentResults from '$lib/components/RecentResults.svelte';
+    import SkeletonLayout from './components/SkeletonLayout.svelte';
 
     let { data }: { data: PageData } = $props();
 
-    const upcoming = $derived(data.matches.filter((m) => m.status !== 'FINISHED'));
+    const skeletonLayout = false;
 </script>
 
 <main>
     <div class="layout">
-        <aside>
-            <RecentResults matches={data.matches} />
-        </aside>
-        <section>
-            <MatchList matches={upcoming} />
-        </section>
+        {#if skeletonLayout}
+            <SkeletonLayout />
+        {:else}
+        {#await data.matchesData}
+            <SkeletonLayout />
+        {:then { matches }}
+            <aside>
+                <RecentResults {matches} />
+            </aside>
+            <section>
+                <MatchList matches={matches.filter((m) => m.status !== 'FINISHED')} />
+            </section>
+        {/await}
+        {/if}
+
     </div>
 </main>
 
@@ -42,4 +52,5 @@
         flex: 1;
         min-width: 0;
     }
+
 </style>
