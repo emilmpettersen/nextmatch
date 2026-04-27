@@ -1,7 +1,8 @@
 <script lang="ts">
-  import Navbar from '$lib/components/Navbar.svelte';
+  	import Navbar from '$lib/components/Navbar.svelte';
 	import '$lib/styles/variables.css';
-  import type { LayoutData } from './$types';
+	import '$lib/styles/global.css';
+ 	import type { LayoutData } from './$types';
 
 	let { children, data } = $props();
 </script>

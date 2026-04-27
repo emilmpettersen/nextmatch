@@ -22,10 +22,5 @@
   --color-live: #164225;
   --color-finished: #0e0c15;
   --color-scheduled: #241f3a;
-}
-
-body {
-  margin: 0;
-  background: var(--color-bg);
-  font-family: sans-serif;
+  --color-postponed: #25232c;
 }

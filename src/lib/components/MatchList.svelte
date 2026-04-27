@@ -61,7 +61,8 @@
 						<li class="match-card"
                             class:scheduled={match.status === 'SCHEDULED' || match.status === 'TIMED'}
                             class:live={match.status === 'LIVE' || match.status === 'IN_PLAY' || match.status === 'PAUSED'}
-                            class:finished={match.status === 'FINISHED'}>
+                            class:finished={match.status === 'FINISHED'}
+                            class:postponed={match.status === 'POSTPONED'}>
 							<span class="competition">
 								{#if match.competition.emblem}
 								<div class="competition-emblem-wrapper">
@@ -99,6 +100,13 @@
                             </span>
                         {:else if match.status === 'FINISHED'}
                             <span class="time">{formatDate(match.utcDate)}</span>
+                        {:else if match.status === 'POSTPONED'}
+						<div class="times">
+                            <span class="time">{formatDate(match.utcDate)}</span>
+                            <span class="postponed">
+                                POSTPONED
+                            </span>
+						</div>
                         {:else}
 						<div class="times">
                             <span class="time">{formatDate(match.utcDate)}</span>
@@ -162,6 +170,9 @@
             background: var(--color-live);
             border-color: var(--color-border-live)
         }
+		&.postponed {
+			background: var(--color-postponed);
+		}
 	}
 
 	.competition {
