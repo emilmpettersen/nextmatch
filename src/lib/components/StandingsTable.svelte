@@ -1,7 +1,11 @@
 <script lang="ts">
     import type { StandingGroup } from '$lib/types';
 
-    let { standings = [] }: { standings: StandingGroup[] } = $props();
+    interface Props {
+        standings?: StandingGroup[];
+        hoveredTeamIds?: number[];
+    }
+    let { standings = [], hoveredTeamIds = [] }: Props = $props();
 
     // Prefer the TOTAL type table, fall back to the first available
     const table = $derived(
@@ -27,7 +31,7 @@
         </thead>
         <tbody>
             {#each table as row}
-                <tr>
+                <tr class:highlighted={hoveredTeamIds.includes(row.team.id)}>
                     <td class="pos">{row.position}</td>
                     <td class="team">
                         <img src={row.team.crest} alt={row.team.shortName} width="20" height="20" />
@@ -69,10 +73,15 @@
         padding: 0.5rem 0.5rem;
         text-align: center;
     }
+
     tr {
         border-bottom: 1px solid #54565a;
         &:last-of-type {
             border-bottom: none;
+        }
+        &.highlighted {
+            background: var(--color-border);
+            transition: background 0.15s;
         }
     }
 

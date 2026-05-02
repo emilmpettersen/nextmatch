@@ -9,6 +9,7 @@ const COMPETITION_MAP: Record<string, string> = {
   "premier-league": "PL",
   bundesliga: "BL1",
   "la-liga": "PD",
+  "serie-a": "SA",
 };
 
 export const load: PageServerLoad = async ({ params }) => {

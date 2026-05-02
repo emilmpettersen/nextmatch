@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { Match } from '$lib/types';
 
-	let { matches }: { matches: Match[] } = $props();
+	interface Props {
+		matches: Match[];
+		onTeamHover?: (ids: number[]) => void;
+	}
+	let { matches, onTeamHover }: Props = $props();
 
 	function formatDate(utcDate: string): string {
 		return new Date(utcDate).toLocaleString(undefined, {
@@ -59,6 +63,8 @@
 				<ul>
 					{#each group.matches as match}
 						<li class="match-card"
+							onmouseenter={() => onTeamHover?.([match.homeTeam.id, match.awayTeam.id])}
+							onmouseleave={() => onTeamHover?.([])}
                             class:scheduled={match.status === 'SCHEDULED' || match.status === 'TIMED'}
                             class:live={match.status === 'LIVE' || match.status === 'IN_PLAY' || match.status === 'PAUSED'}
                             class:finished={match.status === 'FINISHED'}

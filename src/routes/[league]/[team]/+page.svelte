@@ -3,6 +3,7 @@
     import MatchList from '$lib/components/MatchList.svelte';
     import { nationalityFlag } from '$lib/utils';
     import SkeletonLayout from './components/SkeletonLayout.svelte';
+  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
     let { data }: { data: PageData } = $props();
 
@@ -56,7 +57,7 @@
 </script>
 
 <main>
-    
+    <Breadcrumb />
     <div class="layout">
         {#if skeletonLayout}
         <SkeletonLayout />
@@ -72,10 +73,24 @@
                         alt={team.name}
                         height="100"
                     />
-                    <h1>{team.name}</h1>
+                    <div class="team-info">
+                        <h1>{team.name}</h1>
+                        <span>{team.venue}</span>
+                        <span>Est. {team.founded}</span>
+                    </div>
                 </div>
                 <div class="squad">
                     <h2>SQUAD</h2>
+                    {#if team.coach}
+                        <h3>Manager</h3>
+                        <div class="manager">
+                            <span>
+                                <span class="manager-icon">👔</span>
+                                <span class="manager-name">{team.coach.name}</span>
+                            </span>
+                            <span>{nationalityFlag(team.coach.nationality)}</span>
+                        </div>
+                    {/if}
                     {#if team.squad}
                         {@const squadByGroup = getSquadByGroup(team.squad)}
                         {#each squadByGroup as group}
@@ -96,6 +111,7 @@
                 </div>
             </aside>
             <section>
+                
                 <MatchList {matches} />
             </section>
         {/await}
@@ -109,7 +125,7 @@
     main {
         max-width: 1440px;
         margin: 0 auto;
-        padding: 2rem 1rem;
+        padding: 1rem;
     }
     
     aside {
@@ -139,6 +155,22 @@
         display: flex;
         gap: 2rem;
         align-items: flex-start;
+    }
+
+    @media screen and (max-width:800px) {
+        .layout {
+            flex-direction:column;
+        }
+    }
+
+    .team-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        span {
+            text-align:left;
+            color: var(--color-text-muted);
+        }
     }
 
     .team-header {
@@ -197,5 +229,12 @@
         margin-left: auto;
         font-size: 1rem;
         line-height: 1;
+    }
+
+    .manager {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem;
+
     }
 </style>

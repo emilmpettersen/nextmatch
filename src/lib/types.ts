@@ -6,11 +6,20 @@ export interface SquadMember {
   nationality: string | null;
 }
 
+export interface Coach {
+  id: number;
+  name: string;
+  nationality: string | null;
+}
+
 export interface Team {
   id: number;
   name: string;
   shortName: string;
   crest: string;
+  venue: string;
+  founded: number;
+  coach?: Coach;
   squad?: SquadMember[];
 }
 

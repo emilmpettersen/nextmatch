@@ -10,17 +10,18 @@
         { slug: 'champions-league', label: 'Champions League' },
         { slug: 'bundesliga', label: 'Bundesliga' },
         { slug: 'la-liga', label: 'La Liga' },
+        { slug: 'serie-a', label: 'Serie A' },
     ];
 </script>
 
 <nav>
-    <a href="/" class:active={page.url.pathname === '/'}>Home</a>
+    <a href="/" class:active={page.url.pathname === '/'}>HOME</a>
     {#each leagues as league}
         <div class="nav-item">
             <a
                 href="/{league.slug}"
                 class:active={page.url.pathname === `/${league.slug}`}
-            >{league.label}</a>
+            >{league.label.toUpperCase()}</a>
             <div class="dropdown">
                 {#each (leagueTeams[league.slug] ?? []).sort((a, b) => a.shortName.localeCompare(b.shortName)) as team}
                     <a class="dropdown-item" href="/{league.slug}/{slugify(team.shortName)}">

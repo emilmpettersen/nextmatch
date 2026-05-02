@@ -8,6 +8,7 @@ const LEAGUES: { slug: string; code: string }[] = [
   { slug: "champions-league", code: "CL" },
   { slug: "bundesliga", code: "BL1" },
   { slug: "la-liga", code: "PD" },
+  { slug: "serie-a", code: "SA" },
 ];
 
 export const load: LayoutServerLoad = async () => {

@@ -5,13 +5,17 @@
     import RecentResults from '$lib/components/RecentResults.svelte';
     import SkeletonLayout from './components/SkeletonLayout.svelte';
     import { nationalityFlag } from '$lib/utils';
+  import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
     let { data }: { data: PageData } = $props();
+
+    let hoveredTeamIds = $state<number[]>([]);
 
     const skeletonLayout = false;
 </script>
 
 <main>
+    <Breadcrumb />
     <div class="layout">
         {#if skeletonLayout}
             <SkeletonLayout />
@@ -19,6 +23,7 @@
         {#await data.pageData}
             <SkeletonLayout />
         {:then { standings, competition, matches, scorers }}
+        {console.log(matches)}
             <aside>
                 <div class="emblem-wrapper">
                     <img
@@ -28,7 +33,7 @@
                         style:height={competition.code === 'PL' ? '180px' : '120px'}
                     />
                 </div>
-                <StandingsTable {standings} />
+                <StandingsTable {standings} {hoveredTeamIds}/>
                 <RecentResults {matches} />
             </aside>
 
@@ -69,7 +74,10 @@
                         </div>
                     </div>
                 {/if}
-                <MatchList matches={matches.filter((m) => m.status !== 'FINISHED')} />
+                <MatchList 
+                    matches={matches.filter((m) => m.status !== 'FINISHED')} 
+                    onTeamHover={(ids) => hoveredTeamIds = ids}
+                />
             </section>
         {/await}
         {/if}
@@ -81,10 +89,11 @@
     main {
         max-width: 1440px;
         margin: 0 auto;
-        padding: 2rem 1rem;
+        padding: 1rem;
         font-family: sans-serif;
     }
 
+    
 
     .emblem-wrapper {
         height: 120px;
@@ -119,8 +128,6 @@
 
     aside {
         flex: 0 0 420px;
-        position: sticky;
-        top: 1rem;
     }
 
     section {

@@ -15,8 +15,8 @@
             if (m.status === 'FINISHED') return false;
             if (!query) return true;
             return (
-                m.homeTeam.name.toLowerCase().includes(query) ||
-                m.awayTeam.name.toLowerCase().includes(query) ||
+                m.homeTeam.name?.toLowerCase().includes(query) ||
+                m.awayTeam.name?.toLowerCase().includes(query) ||
                 m.competition.name.toLowerCase().includes(query)
             );
         });
@@ -24,14 +24,7 @@
 </script>
 
 <main>
-    <div class="search-container">
-        <input
-            class="search"
-            type="search"
-            placeholder="Search teams or leagues…"
-            bind:value={search}
-        />
-    </div>
+
     <div class="layout">
         {#if skeletonLayout}
             <SkeletonLayout />
@@ -39,11 +32,18 @@
         {#await data.matchesData}
             <SkeletonLayout />
         {:then { matches }}
+        <div class="search-container">
+            <input
+                class="search"
+                type="search"
+                placeholder="Search teams or leagues…"
+                bind:value={search}
+            />
+        </div>
             <aside>
                 <RecentResults {matches} />
             </aside>
             <section>
-                
                 <MatchList matches={filterMatches(matches)} />
             </section>
         {/await}
