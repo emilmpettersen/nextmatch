@@ -21,7 +21,7 @@
             <a
                 href="/{league.slug}"
                 class:active={page.url.pathname === `/${league.slug}`}
-            >{league.label.toUpperCase()}</a>
+            >{league.label}</a>
             <div class="dropdown">
                 {#each (leagueTeams[league.slug] ?? []).sort((a, b) => a.shortName.localeCompare(b.shortName)) as team}
                     <a class="dropdown-item" href="/{league.slug}/{slugify(team.shortName)}">
@@ -34,6 +34,7 @@
             </div>
         </div>
     {/each}
+    <a href="/my-studio" class:active={page.url.pathname === '/my-studio'} class="my-studio">MY STUDIO</a>
 </nav>
 
 <style>
@@ -46,6 +47,10 @@
         border-bottom: 1px solid var(--color-border);
         position: relative;
         z-index: 100;
+
+        .my-studio {
+            margin-left: auto;
+        }
     }
 
     a {
@@ -57,6 +62,7 @@
         color: var(--color-text-muted);
         text-decoration: none;
         padding: 0 2rem;
+        text-transform: uppercase;
         border-bottom: 2px solid transparent;
         transition: color 0.15s, border-color 0.15s;
 

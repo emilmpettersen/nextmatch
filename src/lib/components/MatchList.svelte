@@ -1,11 +1,17 @@
 <script lang="ts">
 	import type { Match } from '$lib/types';
+	import { trackedMatches } from '$lib/stores/trackedMatches.svelte';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		matches: Match[];
 		onTeamHover?: (ids: number[]) => void;
 	}
 	let { matches, onTeamHover }: Props = $props();
+
+	$effect(() => {
+		if (browser) trackedMatches.init();
+	});
 
 	function formatDate(utcDate: string): string {
 		return new Date(utcDate).toLocaleString(undefined, {
@@ -81,6 +87,14 @@
 								</div>
 								{/if}
 								{match.competition.name}
+								<button
+								class="track-btn"
+								class:tracked={trackedMatches.isTracked(match.id)}
+								onclick={() => trackedMatches.toggle(match)}
+								title={trackedMatches.isTracked(match.id) ? 'Untrack match' : 'Track match'}
+							>
+								{trackedMatches.isTracked(match.id) ? '★' : '☆'}
+							</button>
 							</span>
 							<div class="teams">
 								<span class="team">
@@ -99,6 +113,7 @@
 								<span class="team-name">{match.awayTeam.name}</span>
 								</span>
 							</div>
+							
 							{#if match.status === 'LIVE' || match.status === 'IN_PLAY' || match.status === 'PAUSED'}
                             <span class="live-indicator">
                                 <span class="dot"></span>
@@ -298,4 +313,25 @@
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.4; transform: scale(0.75); }
     }
+
+	.track-btn {
+		align-self: flex-end;
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 1.1rem;
+		color: #666;
+		padding: 0;
+		line-height: 1;
+		transition: color 0.15s, transform 0.15s;
+
+		&:hover {
+			color: #f59e0b;
+			transform: scale(1.2);
+		}
+
+		&.tracked {
+			color: #f59e0b;
+		}
+	}
 </style>
